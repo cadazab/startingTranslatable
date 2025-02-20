@@ -1,0 +1,16 @@
+services:
+  myservice:
+    image: translatable-bun-server  # Replace with your image name and tag
+    ports:
+      - "3000:3000"  
+    env_file:
+      - .env  # Specify the .env file        # Define any environment variables
+    restart: always              # Restart container if it stops
+    deploy:
+      update_config:
+        update_config:
+        order: start-first
+    
+    # Scaling configuration
+    # deploy:
+    #   replicas: 2  # Scale to 2 instances

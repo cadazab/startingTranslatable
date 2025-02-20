@@ -1,0 +1,27 @@
+name: Deploy to Docker Swarm
+
+on:
+  push:
+    branches:
+      - main # Change this to your default branch
+    paths:
+      - "server/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: "Docker Stack Deploy"
+        uses: cssnr/stack-deploy-action@v1
+        with:
+          name: "translatable-server"
+          file: "server/docker-compose-swarm.yaml"
+          host: 167.172.107.38
+          port: 3000
+          user: root
+          ssh_key: "${{ secrets.DEPLOY_SSH_KEY }}"

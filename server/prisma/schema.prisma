@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Language {
+  id            String         @id @default(nanoid())
+  code          String         @unique
+  name          String         @unique
+  locales       Locale[]
+  customLocales CustomLocale[]
+}
+
+model Locale {
+  id                    String                         @id @default(nanoid())
+  code                  String                         @unique
+  name                  String                         @unique
+  languageId            String
+  language              Language                       @relation(fields: [languageId], references: [id])
+  translatorsAuthorized translatorsAuthorizedLocales[]
+}
+
+model User {
+  id             String       @id @default(nanoid())
+  email          String       @unique
+  name           String
+  avatarUrl      String
+  role           String
+  organizationID String
+  organization   Organization @relation(fields: [organizationID], references: [id])
+  translator     Translator?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Organization {
+  id                String                         @id @default(nanoid())
+  name              String
+  activeLocales     String
+  users             User[]
+  customLocales     CustomLocale[]
+  translations      Translation[]
+  Translators       Translator[]
+  authorizedLocales translatorsAuthorizedLocales[]
+}
+
+model CustomLocale {
+  id             String       @id @default(nanoid())
+  code           String
+  name           String
+  languageId     String
+  language       Language     @relation(fields: [languageId], references: [id])
+  organizationID String
+  organization   Organization @relation(fields: [organizationID], references: [id])
+
+  @@unique([code, name, organizationID])
+}
+
+model Translation {
+  id             String       @id @default(nanoid())
+  code           String
+  organizationID String
+  organization   Organization @relation(fields: [organizationID], references: [id])
+  localeType     String // 'Locale' or 'CustomLocale'
+  localeId       String // ID of the referenced locale
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([code, organizationID, localeId])
+}
+
+model Translator {
+  id                String                         @id @default(nanoid())
+  userId            String                         @unique
+  user              User                           @relation(fields: [userId], references: [id])
+  organizationID    String
+  organizations     Organization[]
+  authorizedLocales translatorsAuthorizedLocales[]
+  createdAt         DateTime                       @default(now())
+  updatedAt         DateTime                       @updatedAt
+
+  @@unique([userId, organizationID])
+}
+
+model translatorsAuthorizedLocales {
+  id             String       @id @default(nanoid())
+  translatorId   String
+  translator     Translator   @relation(fields: [translatorId], references: [id])
+  organizationID String
+  organization   Organization @relation(fields: [organizationID], references: [id])
+  localeId       String
+  locale         Locale       @relation(fields: [localeId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([translatorId, organizationID, localeId])
+}
+
+model Test {
+  id        String   @id @default(nanoid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
