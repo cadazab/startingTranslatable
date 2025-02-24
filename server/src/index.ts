@@ -6,14 +6,13 @@ const prisma = new PrismaClient();
 const test = new Hono().post("/", async (c) => {
   const body = await c.req.json();
   console.log(body);
-  console.log("test");
 
   const response = await prisma.test.create({
     data: {
       ...body,
     },
   });
-  return c.json({ response }, 201);
+  return c.json({ response, test: "hello world" }, 201);
 });
 
 const app = new Hono().route("test", test);

@@ -5,7 +5,7 @@ echo "Updating package lists..."
 sudo apt update
 
 echo "Instaling ohmyzsh"
-sudo apt install zsh
+sudo apt install zsh -y
 chsh -s $(which zsh)
 curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
 
@@ -16,10 +16,6 @@ cp zsh-themes/agnoster.zsh-theme ~/.oh-my-zsh/themes/agnoster.zsh-theme
 # Source the .zshrc file to apply changes
 source ~/.zshrc
 echo "Oh My Zsh theme changed to agnoster and theme file replaced successfully."
-
-# Install Deno
-echo "Instaling Bun"
-curl -fsSL https://bun.sh/install | bash
 
 # Add Docker's official GPG key:
 sudo apt-get update
@@ -36,7 +32,7 @@ echo \
 sudo apt-get update
 
 # Install Docker
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
 echo "Cleaning up unnecessary packages..."
 sudo apt autoremove -y
@@ -44,5 +40,11 @@ sudo apt autoclean
 
 echo "System update and upgrade completed successfully!"
 
-# Restart the shell
-exec $SHELL
+
+echo "initializing docker swarm"
+docker swarm init --advertise-addr 134.209.249.254
+# Init service
+
+exec # Init zsh
+exec zsh
+

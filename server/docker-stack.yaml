@@ -1,0 +1,8 @@
+services:
+  myservice:
+    image: ghcr.io/cadazab/hono-server:latest
+    ports:
+      - "3000:3000"
+    deploy:
+      update_config:
+        order: start-first

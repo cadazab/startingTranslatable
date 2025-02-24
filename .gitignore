@@ -1,0 +1,5 @@
+node_modules
+.env
+.DS_Store
+github_actions_key.pub
+github_actions_key
