@@ -10,18 +10,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: "Docker Stack Deploy"
-        uses: cssnr/stack-deploy-action@v1
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          name: "translatable-server"
-          file: "server/docker-compose-swarm.yaml"
-          host: 167.172.107.38
-          port: 3000
-          user: root
-          ssh_key: "${{ secrets.DEPLOY_SSH_KEY }}"
+          ssh-private-key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+
+      - name: Deploy in VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no user@your-vps-ip "
+            cd startingTranslatable && 
+            git pull origin main && 
+            cd server
+            docker stack deploy -c ./docker-compose.yml translatable-server
+          "
